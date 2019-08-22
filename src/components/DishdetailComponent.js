@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Label,Row } from 'reactstrap';
+import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Label,Row, Col } from 'reactstrap';
 import { LocalForm, Control, Errors } from 'react-redux-form';
 import { Link } from 'react-router-dom';
+
 
 
 
@@ -25,7 +26,7 @@ import { Link } from 'react-router-dom';
             );
     }
 
-    function RenderComments({comments}) {
+    function RenderComments({comments, addComment, dishId }) {
         if (comments != null) {   
             return(
                 <div className="col-12 col-md-5 m-1">
@@ -40,7 +41,7 @@ import { Link } from 'react-router-dom';
                             );                               
                         })}                          
                     </ul>
-                    <CommentForm />
+                    <CommentForm dishId={dishId} addComment={addComment} />
                 </div>   
             );
         }
@@ -66,7 +67,10 @@ import { Link } from 'react-router-dom';
                     </div>
                     <div className="row">                       
                             <RenderDish dish={props.dish} />                                         
-                            <RenderComments comments={props.comments} />                            
+                            <RenderComments comments={props.comments}
+                                addComment={props.addComment}
+                                dishId={props.dish.id}
+                            />                           
                     </div>
                 </div>
             );
@@ -100,8 +104,12 @@ import { Link } from 'react-router-dom';
         }
 
         handleSubmit(values) {
-            console.log('Current State is: ' + JSON.stringify(values));
-            alert('Current State is: ' + JSON.stringify(values));
+            this.toggleModal();
+           // console.log('Current State is: ' +  JSON.stringify(values));
+           // alert('Current State is: ' +  JSON.stringify(values));
+            
+            this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+            console.log('Current State is: ' +  JSON.stringify(values));
         }
 
         render(){
@@ -115,39 +123,39 @@ import { Link } from 'react-router-dom';
                     <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
                     <ModalBody>
                         <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
-                            <Row className="form-group m-1">
-                                <Label htmlFor="rating">Rating</Label>
+                            <Row className="form-group">
+                                <Label htmlFor="rating" md={12}>Rating</Label>
                             </Row>
-                            <Row className="form-group m-1">
-                                <Control.select model=".rating" name="rating" className="form-control">
+                            <Col md={10}>
+                                <Control.select model=".rating" id="rating" name="rating" className="form-control">
                                     <option>1</option>
                                     <option>2</option>
                                     <option>3</option>
                                     <option>4</option>
                                     <option>5</option>
                                 </Control.select>
+                            </Col>
+                            <Row className="form-group">
+                                <Label htmlFor="author" md={12}>Your Name</Label>
                             </Row>
-                            <Row className="form-group m-1">
-                                <Label htmlFor="yourname">Your Name</Label>
-                            </Row>
-                            <Row className="form-group m-1">
-                                <Control.text model=".yourname" id="yourname" name="yourname" placeholder="Your Name" className="form-control"
+                            <Col md={10}>
+                                <Control.text model=".author" id="author" name="author" placeholder="Your Name" className="form-control"
                                     validators={{
                                         required, minLength:minLength(3), maxLength:maxLength(15)
                                     }} />
-                                <Errors className="text-danger" model=".yourname" show="touched" 
+                                <Errors className="text-danger" model=".author" show="touched" 
                                 messages={{
                                     required:"Required. ",
                                     minLength:"Must be greater than 2 characters",
                                     maxLength: "Must be 15 characters or less"
                                 }} />
+                            </Col>
+                            <Row className="form-group">
+                                <Label htmlFor="comment"  md={12}>Comment</Label>
                             </Row>
-                            <Row className="form-group m-1">
-                                <Label htmlFor="comment" >Comment</Label>
-                            </Row>
-                            <Row className="form-group m-1">
-                                <Control.textarea rows="6" model=".comment" id="comment" name="comment" className="form-control" />
-                            </Row>
+                            <Col>
+                                <Control.textarea md={12} rows="6" model=".comment" id="comment" name="comment" className="form-control" />
+                            </Col>
                             <Row className="form-group m-1">
                                 <Button type="submit"  value="submit" color="primary">Submit</Button>
                             </Row>
