@@ -11,6 +11,7 @@ export const Comments = (state = COMMENTS, action) => {
             return state.concat(comment);
 
         default:
-          return state;
+           console.log("default state");
+           return state;
       }
 };
